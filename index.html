@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OneDoor — Concept prototype</title>
+<meta name="description" content="OneDoor: one front door, many back offices. A concept prototype for a unified GCC employee experience.">
+<style>
+:root{--navy:#14213D;--teal:#0FA3B1;--teal-l:#E3F6F7;--bg:#F5F7FA;--card:#fff;--ink:#1D2433;--mut:#6B7385;--line:#E3E7EE;--amber:#F2A541;--red:#D9534F;--green:#2E9E6A;
+--hr:#7B61FF;--it:#0FA3B1;--time:#F2A541;--ld:#2E9E6A;--adm:#E86A92;--com:#4A7BD0}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
+button{font:inherit;cursor:pointer}
+.banner{background:var(--navy);color:#cfd6e4;font-size:12px;text-align:center;padding:6px 10px}
+.banner b{color:#fff}
+header{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:12px 24px;position:sticky;top:0;z-index:5;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:18px;color:var(--navy)}
+.logo .door{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--teal),var(--navy));position:relative}
+.logo .door:after{content:"";position:absolute;right:7px;top:12px;width:3px;height:3px;border-radius:50%;background:#fff}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{background:none;border:0;padding:8px 12px;border-radius:8px;color:var(--mut);font-weight:600}
+nav button.on{background:var(--teal-l);color:var(--navy)}
+.persona{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mut)}
+select{font:inherit;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:#fff}
+main{max-width:1180px;margin:0 auto;padding:22px 24px 60px}
+h1{font-size:22px;margin:0 0 4px;color:var(--navy)}h2{font-size:16px;margin:0 0 12px;color:var(--navy)}
+.sub{color:var(--mut);margin:0 0 18px}
+.grid{display:grid;gap:16px}.g3{grid-template-columns:2fr 1fr}.g2{grid-template-columns:1fr 1fr}.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:860px){.g3,.g2,.g4{grid-template-columns:1fr}.persona{margin-left:0}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.ask{display:flex;gap:8px;background:#fff;border:2px solid var(--teal);border-radius:14px;padding:6px 6px 6px 14px;align-items:center}
+.ask input{flex:1;border:0;outline:0;font:inherit;font-size:15px;padding:8px 0}
+.btn{background:var(--navy);color:#fff;border:0;border-radius:10px;padding:9px 14px;font-weight:600}
+.btn.t{background:var(--teal)}.btn.g{background:#fff;color:var(--navy);border:1px solid var(--line)}.btn.sm{padding:6px 10px;font-size:12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{background:#fff;border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:12.5px;color:var(--ink)}
+.chip:hover{border-color:var(--teal)}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;color:#fff;white-space:nowrap}
+.HR{background:var(--hr)}.IT{background:var(--it)}.TIME{background:var(--time)}.LD{background:var(--ld)}.ADMIN{background:var(--adm)}.COMMS{background:var(--com)}
+.row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.row:last-child{border:0}
+.row .grow{flex:1}.row>.tag{min-width:70px;justify-content:center}.mut{color:var(--mut);font-size:12px}
+.st{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px}
+.st.done{background:#E2F4EA;color:var(--green)}.st.prog{background:#FFF3E0;color:#B7791F}.st.new{background:var(--teal-l);color:var(--navy)}.st.wait{background:#F0EDFF;color:#5A43D6}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--teal)}
+.chat{display:flex;flex-direction:column;gap:12px;min-height:340px;max-height:58vh;overflow:auto;padding:4px}
+.msg{max-width:78%;padding:11px 14px;border-radius:14px;line-height:1.45}
+.me{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-right-radius:4px}
+.bot{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:4px}
+.src{margin-top:8px;font-size:11.5px;color:var(--mut);border-top:1px dashed var(--line);padding-top:6px}
+.action{margin-top:10px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px}
+.route{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--mut);margin-top:6px;flex-wrap:wrap}
+.kpi{font-size:26px;font-weight:800;color:var(--navy)}.kpi small{font-size:12px;color:var(--green);font-weight:700;margin-left:6px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--mut);font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line)}
+.box{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex:none;display:grid;place-items:center;color:#fff;font-size:12px;cursor:pointer}
+.box.on{background:var(--green);border-color:var(--green)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;transition:.3s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+.hint{background:var(--teal-l);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--navy)}
+.pill{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:20px;padding:2px 8px}
+.legend{display:flex;gap:6px;flex-wrap:wrap}
+.hidden{display:none}
+.typing{color:var(--mut);font-style:italic;font-size:12.5px}
+a{color:var(--teal)}
+</style>
+</head>
+<body>
+<div class="banner"><b>Concept prototype</b> · simulated data, no real systems connected · built for a case-study submission by Amey Rajul Shamkuwar (IIM Lucknow) · not an official product of any company · <b>Tip:</b> switch persona at top-right</div>
+<header>
+  <div class="logo"><div class="door"></div>OneDoor</div>
+  <nav id="nav"></nav>
+  <div class="persona">Viewing as
+    <select id="persona"></select>
+  </div>
+</header>
+<main id="app"></main>
+<div class="toast" id="toast"></div>
+
+<script>
+// ---------- Data (all simulated) ----------
+const SYS={HR:"HR system (HRMS)",IT:"IT service desk (ITSM)",TIME:"Time & attendance",LD:"Learning (LMS)",ADMIN:"Admin & facilities",COMMS:"Intranet & comms"};
+const FN={HR:"HR",IT:"IT",TIME:"Time",LD:"Learning",ADMIN:"Admin",COMMS:"Comms"};
+const PERSONAS={
+ joiner:{name:"Priya",role:"New joiner · Analyst, Day 3",tabs:["home","ask","journey","requests"]},
+ assoc:{name:"Rahul",role:"Associate · Senior Engineer",tabs:["home","ask","requests"]},
+ mgr:{name:"Meera",role:"People manager · 9 reports",tabs:["home","ask","inbox","requests"]},
+ leaver:{name:"Arjun",role:"Serving notice · last day 12 Dec",tabs:["home","ask","journey","requests"]},
+ owner:{name:"Function owner",role:"HR / IT service lead",tabs:["console","contracts"]}
+};
+const TABN={home:"My Day",ask:"Ask OneDoor",journey:"My journey",requests:"My requests",inbox:"Approvals",console:"Owner console",contracts:"Service contracts"};
+let state={p:"joiner",tab:"home",chat:{},reqs:{},journey:{},inbox:null};
+const seedReqs={
+ joiner:[{id:"REQ-1041",t:"Laptop & accessories",f:"IT",s:"prog",d:"Shipped to desk 4B-112 · ETA today"},{id:"REQ-1039",t:"Access card",f:"ADMIN",s:"done",d:"Collect from reception, Tower B"}],
+ assoc:[{id:"REQ-2210",t:"VPN access for client project",f:"IT",s:"wait",d:"Waiting for manager approval"},{id:"REQ-2198",t:"Shift allowance correction",f:"TIME",s:"prog",d:"With payroll ops · SLA 3 days"}],
+ mgr:[{id:"REQ-3302",t:"Backfill requisition — Analyst",f:"HR",s:"prog",d:"Recruiter assigned"}],
+ leaver:[{id:"REQ-4410",t:"Resignation accepted",f:"HR",s:"done",d:"Last working day 12 Dec"},{id:"REQ-4411",t:"Asset return — laptop",f:"IT",s:"new",d:"Pick-up slot not booked"}]
+};
+const journeys={
+ joiner:{title:"Onboarding: Day −7 to Day 30",items:[
+  ["Sign offer & submit documents","HR",1],["Laptop, email & core access","IT",1],["Access card & seat","ADMIN",1],["Bank & tax details for payroll","HR",0],["Mandatory compliance courses (privacy, security)","LD",0],["Meet your buddy — Karan","HR",0],["Set Day-30 goals with manager","HR",0],["Join team channels & townhall calendar","COMMS",0]]},
+ leaver:{title:"Exit: notice period to last day",items:[
+  ["Resignation accepted","HR",1],["Knowledge hand-over plan agreed","HR",0],["Book laptop & access-card return","IT",0],["Clear pending leave & timesheets","TIME",0],["Return ID card & locker key","ADMIN",0],["Exit interview","HR",0],["Full & final settlement status","HR",0],["Download service letter","HR",0]]}
+};
+const inboxSeed=[
+ {id:"A1",t:"Leave · Rahul · 2 days (24–25 Nov)",f:"HR",note:"Team coverage OK on those dates"},
+ {id:"A2",t:"VPN access · Rahul · client project",f:"IT",note:"Standard access profile"},
+ {id:"A3",t:"Timesheet · 4 reports · week 46",f:"TIME",note:"1 timesheet has 2h overtime"},
+ {id:"A4",t:"Course nomination · Sana · Cloud fundamentals",f:"LD",note:"Fits her Day-90 goal"}
+];
+// Knowledge (simulated policies)
+const KB=[
+ {k:["work from home","wfh","hybrid","remote"],f:"COMMS",a:"Hybrid policy: 3 office days a week for most roles; your manager can approve exceptions for up to 2 weeks at a time.",src:"Hybrid Work Policy v3.2 · owner: HR Policy · updated Aug 2026 (simulated)"},
+ {k:["holiday","holidays","public holiday"],f:"HR",a:"There are 2 more company holidays this year in your location: 25 Dec and 31 Dec (optional).",src:"Holiday Calendar 2026 · owner: HR Ops (simulated)"},
+ {k:["relocat","transfer city","move city"],f:"HR",a:"Internal relocation support covers travel, 15 days' temporary stay and a one-time shifting allowance. It starts with a request from your manager.",src:"Relocation Guideline v1.4 · owner: HR (simulated)"},
+ {k:["maternity","paternity","parental"],f:"HR",a:"Parental leave: 26 weeks' maternity leave and 2 weeks' paternity leave, plus a phased return option.",src:"Leave Policy v5.0 · owner: HR Policy (simulated)"},
+ {k:["insurance","medical","health cover"],f:"HR",a:"You and your dependants are covered under group medical insurance from Day 1. E-cards are in the HR system under Benefits.",src:"Benefits Handbook 2026 · owner: Total Rewards (simulated)"},
+ {k:["cab","transport","shuttle"],f:"ADMIN",a:"Night cabs are available for shifts ending after 8 PM. Book by 4 PM the same day.",src:"Transport SOP · owner: Admin (simulated)"},
+ {k:["townhall","announcement","news"],f:"COMMS",a:"Next townhall: Friday 4 PM, Auditorium + Teams. Topic: 2027 priorities.",src:"Internal comms calendar (simulated)"}
+];
+// Intents -> actions
+const INTENTS=[
+ {id:"leave",k:["leave","day off","days off","vacation","time off","pto"],f:"HR",run:(q)=>{const n=(q.match(/(\d+)\s*(day|days)/)||[])[1]||"1";return{a:`You have <b>11 earned-leave days</b> left. I can apply <b>${n} day${n>1?"s":""} of earned leave</b> and notify your manager.`,act:{t:`Leave · ${n} day${n>1?"s":""}`,f:"HR",d:"Sent to manager for approval"},src:"Balance read from HR system · Leave Policy v5.0"}}},
+ {id:"payslip",k:["payslip","salary slip","pay slip","salary"],f:"HR",run:()=>({a:"Your October payslip is ready. Net pay credited on 31 Oct. Want it emailed as a PDF?",act:{t:"Email October payslip",f:"HR",d:"PDF sent to your inbox",instant:true},src:"Payroll · HR system (simulated data)"})},
+ {id:"pwd",k:["password","locked","lock out","unlock","mfa"],f:"IT",run:()=>({a:"Looks like your account was locked after 3 failed attempts. I can unlock it and send a reset link to your registered phone.",act:{t:"Unlock account & reset password",f:"IT",d:"Reset link sent · resolved",instant:true},src:"Identity check via IT service desk"})},
+ {id:"laptop",k:["laptop","slow","screen","keyboard","hardware","mouse","monitor"],f:"IT",run:()=>({a:"Sorry about that. A quick health check shows low disk space (4% free). Try the one-click clean-up first. If it's still slow, I'll raise a hardware ticket with your device details already filled in.",act:{t:"Raise hardware ticket",f:"IT",d:"Assigned to desk-side support · SLA 1 day"},src:"Device telemetry · IT service desk"})},
+ {id:"access",k:["access","vpn","permission","jira","sharepoint","software","install"],f:"IT",run:()=>({a:"This access needs your manager's approval. I'll raise it with the standard profile and track it for you.",act:{t:"Access request (standard profile)",f:"IT",d:"Waiting for manager approval",s:"wait"},src:"Access catalogue · IT service desk"})},
+ {id:"timesheet",k:["timesheet","attendance","shift","overtime","punch","swipe"],f:"TIME",run:()=>({a:"Your timesheet for week 46 is missing 1 day (Wed). I can fill it from your badge swipes (9:12 AM to 6:40 PM).",act:{t:"Fill Wed timesheet from swipes",f:"TIME",d:"Submitted",instant:true},src:"Time & attendance system"})},
+ {id:"learn",k:["course","training","learn","certification","upskill","ai course"],f:"LD",run:()=>({a:"Based on your role, three picks: <b>Responsible AI basics</b> (2h), <b>US healthcare 101</b> (3h), <b>SQL for analysts</b> (6h). Enrol in the first?",act:{t:"Enrol: Responsible AI basics",f:"LD",d:"Added to your learning plan",instant:true},src:"Learning catalogue (LMS)"})},
+ {id:"seat",k:["seat","desk","id card","access card","locker","parking"],f:"ADMIN",run:()=>({a:"I can book a seat near your team on Floor 4 for tomorrow, or raise an ID-card request.",act:{t:"Book seat 4B-118 for tomorrow",f:"ADMIN",d:"Booked",instant:true},src:"Facilities booking"})},
+ {id:"jobs",k:["internal job","open role","career move","ijp","promotion"],f:"HR",run:()=>({a:"There are 3 internal roles that match your skills: Product Analyst (Hyderabad), Data Engineer II (Bengaluru), Scrum Master (Gurugram). Applying needs a 1-line note to your manager (private by default).",act:{t:"Save 3 roles to my career plan",f:"HR",d:"Saved",instant:true},src:"Internal job board · HR system"})},
+ {id:"exit",k:["resign","exit","clearance","last day","notice period","relieving","f&f","full and final"],f:"HR",run:()=>({a:"Your exit checklist has 7 open items across HR, IT, Admin and Time. The next due item is your <b>laptop return</b>. Want me to book a pick-up slot?",act:{t:"Book laptop pick-up · Fri 11 AM",f:"IT",d:"Pick-up booked"},src:"Exit journey · HR + IT + Admin"})}
+];
+const SUG={joiner:["When does my laptop arrive?","What's the WFH policy?","Enrol me in compliance training","Book a seat near my team"],
+ assoc:["Apply 2 days leave and tell my manager","My laptop is very slow","I'm locked out of my account","Fill my missing timesheet"],
+ mgr:["What's the relocation policy?","Show internal open roles","Apply 1 day leave","Townhall details?"],
+ leaver:["What's left on my clearance?","Download my payslip","How do I return my laptop?","Holidays before my last day?"]};
+
+// ---------- Helpers ----------
+const $=s=>document.querySelector(s);
+const tag=f=>`<span class="tag ${f}">${FN[f]}</span>`;
+const stl={done:"Done",prog:"In progress",new:"Open",wait:"Awaiting approval"};
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),2200)}
+function reqs(){return state.reqs[state.p]||(state.reqs[state.p]=JSON.parse(JSON.stringify(seedReqs[state.p]||[])))}
+function jr(){if(!journeys[state.p])return null;return state.journey[state.p]||(state.journey[state.p]=JSON.parse(JSON.stringify(journeys[state.p])))}
+let rc=5000;
+
+// ---------- Engine ----------
+function understand(q){
+ const s=q.toLowerCase();
+ // when does my laptop arrive -> status lookup
+ if(/laptop/.test(s)&&/(arriv|when|status|where)/.test(s)){const r=reqs().find(x=>/laptop/i.test(x.t));if(r)return{a:`Your request <b>${r.id} · ${r.t}</b> is <b>${stl[r.s].toLowerCase()}</b>: ${r.d}.`,src:"Live status · IT service desk",f:"IT",conf:.95}}
+ if(/clearance|what.?s left|pending.*exit/.test(s)&&state.p==="leaver"){const j=jr();const open=j.items.filter(i=>!i[2]);return{a:`${open.length} items still open: `+open.map(i=>i[0]).slice(0,4).join("; ")+(open.length>4?"…":"")+`. The full list is in <b>My journey</b>.`,src:"Exit journey · HR + IT + Admin + Time",f:"HR",conf:.93}}
+ for(const it of INTENTS){if(it.k.some(k=>s.includes(k))){const r=it.run(s);return{...r,f:it.f,conf:.9}}}
+ for(const k of KB){if(k.k.some(x=>s.includes(x)))return{a:k.a,src:k.src,f:k.f,conf:.88}}
+ return{a:"I'm not confident I can answer that correctly. Rather than guess, I can connect you to the right team with your question already attached.",f:null,conf:.3,handoff:true};
+}
+function send(q){
+ if(!q.trim())return;const c=state.chat[state.p]||(state.chat[state.p]=[]);
+ c.push({me:1,t:q});state.tab="ask";render();
+ const box=$("#chat");box.insertAdjacentHTML("beforeend",`<div class="typing" id="typ">OneDoor is checking across HR, IT, Time, Learning, Admin and Comms…</div>`);box.scrollTop=1e6;
+ setTimeout(()=>{c.push({bot:1,r:understand(q)});render();},650);
+}
+function doAction(i){
+ const m=state.chat[state.p][i];const a=m.r.act;if(m.done)return;m.done=1;
+ const id="REQ-"+(rc++);
+ reqs().unshift({id,t:a.t,f:a.f,s:a.instant?"done":(a.s||"prog"),d:a.d});
+ if(state.p==="joiner"&&/compliance|Responsible AI/i.test(a.t)){const j=jr();j.items[4][2]=1}
+ if(state.p==="leaver"&&/laptop/i.test(a.t)){const j=jr();j.items[2][2]=1}
+ toast(`${id} created in ${SYS[a.f]}`);render();
+}
+
+// ---------- Views ----------
+function vHome(){
+ const P=PERSONAS[state.p];const r=reqs();const j=jr();
+ const done=j?j.items.filter(i=>i[2]).length:0;
+ const cards={
+  joiner:()=>`<div class="card"><h2>${j.title}</h2><div class="bar"><i style="width:${done/j.items.length*100}%"></i></div><p class="mut">${done} of ${j.items.length} done · next: ${j.items.find(i=>!i[2])?.[0]||"all done 🎉"}</p><button class="btn sm t" onclick="go('journey')">Open my journey</button></div>`,
+  leaver:()=>`<div class="card"><h2>${j.title}</h2><div class="bar"><i style="width:${done/j.items.length*100}%"></i></div><p class="mut">${done} of ${j.items.length} done · next: ${j.items.find(i=>!i[2])?.[0]||"all done"}</p><button class="btn sm t" onclick="go('journey')">Open exit checklist</button></div>`,
+  mgr:()=>`<div class="card"><h2>Approvals waiting</h2><p class="kpi">${(state.inbox||inboxSeed).length}</p><p class="mut">Leave, access, timesheets and learning, all in one inbox</p><button class="btn sm t" onclick="go('inbox')">Review</button></div>`,
+  assoc:()=>`<div class="card"><h2>Today</h2><p class="mut">Timesheet for Wed is missing · VPN request is waiting for your manager · 11 leave days left</p><button class="btn sm t" onclick="send('Fill my missing timesheet')">Fix timesheet</button></div>`
+ }[state.p]();
+ return `<h1>Good morning, ${P.name}</h1><p class="sub">${P.role} · one place to ask, act and track across every team</p>
+ <div class="ask"><input id="q" placeholder="Ask or do anything, e.g. “apply 2 days leave and tell my manager”" onkeydown="if(event.key==='Enter')send(this.value)"><button class="btn t" onclick="send($('#q').value)">Ask</button></div>
+ <div class="chips">${(SUG[state.p]||[]).map(s=>`<button class="chip" onclick="send('${s.replace(/'/g,"\\'")}')">${s}</button>`).join("")}</div>
+ <div class="grid g3" style="margin-top:18px">
+  <div class="grid">${cards}
+   <div class="card"><h2>My requests across all teams</h2>${r.slice(0,4).map(x=>`<div class="row">${tag(x.f)}<div class="grow"><b>${x.t}</b><div class="mut">${x.id} · ${x.d}</div></div><span class="st ${x.s}">${stl[x.s]}</span></div>`).join("")||'<p class="mut">No open requests</p>'}</div>
+  </div>
+  <div class="grid" style="align-content:start">
+   <div class="card"><h2>For you</h2>
+    <div class="row">${tag("COMMS")}<div class="grow">Townhall Friday 4 PM</div></div>
+    <div class="row">${tag("LD")}<div class="grow">Responsible AI basics · 2h</div></div>
+    <div class="row">${tag("HR")}<div class="grow">Open enrolment for benefits closes 30 Nov</div></div>
+   </div>
+   <div class="card hint"><b>How this works:</b> OneDoor doesn't replace any system. Each answer and action is routed to the system that owns it, and each team keeps control of its content and SLAs.</div>
+  </div>
+ </div>`;
+}
+function vAsk(){
+ const c=state.chat[state.p]||[];
+ return `<h1>Ask OneDoor</h1><p class="sub">One conversation; each action lands in the system that owns it. Low-confidence answers go to a person.</p>
+ <div class="grid g3"><div class="card"><div class="chat" id="chat">${c.length?"":`<div class="mut">Try one of the suggestions →</div>`}${c.map((m,i)=>m.me?`<div class="msg me">${m.t}</div>`:bot(m,i)).join("")}</div>
+ <div class="ask" style="margin-top:12px"><input id="q" placeholder="Type a request…" onkeydown="if(event.key==='Enter')send(this.value)" autofocus><button class="btn t" onclick="send($('#q').value)">Send</button></div></div>
+ <div class="grid" style="align-content:start"><div class="card"><h2>Try</h2><div class="chips" style="margin:0">${[...(SUG[state.p]||[]),"What is the maternity leave policy?","Can I expense my gym membership?"].map(s=>`<button class="chip" onclick="send('${s.replace(/'/g,"\\'")}')">${s}</button>`).join("")}</div></div>
+ <div class="card"><h2>Connected back offices</h2><div class="legend">${Object.keys(FN).map(tag).join("")}</div><p class="mut" style="margin-top:8px">Simulated connectors. Permissions are inherited from each source system.</p></div></div></div>`;
+}
+function bot(m,i){
+ const r=m.r;let h=`<div class="msg bot">${r.a}`;
+ if(r.act)h+=`<div class="action"><b>${r.act.t}</b><div class="route">→ will be created in ${tag(r.act.f)} ${SYS[r.act.f]}</div><div style="margin-top:8px;display:flex;gap:8px">${m.done?'<span class="st done">Done · added to My requests</span>':`<button class="btn sm t" onclick="doAction(${i})">Confirm</button><button class="btn sm g" onclick="toast('Cancelled')">Not now</button>`}</div></div>`;
+ if(r.handoff)h+=`<div class="action"><b>Talk to a person</b><div class="route">Routed to the HR & Admin helpdesk · est. wait 4 min · your question is attached</div><div style="margin-top:8px"><button class="btn sm" onclick="toast('Handed off with full context')">Connect me</button></div></div>`;
+ if(r.src)h+=`<div class="src">Source: ${r.src}${r.f?` · owner ${tag(r.f)}`:""} · confidence ${Math.round(r.conf*100)}%</div>`;
+ return h+"</div>";
+}
+function vJourney(){
+ const j=jr();const done=j.items.filter(i=>i[2]).length;
+ return `<h1>${j.title}</h1><p class="sub">One checklist that pulls tasks from every team. Each item stays owned by its function.</p>
+ <div class="grid g3"><div class="card"><div class="bar" style="margin-bottom:10px"><i style="width:${done/j.items.length*100}%"></i></div>
+ ${j.items.map((it,k)=>`<div class="check"><div class="box ${it[2]?"on":""}" onclick="tick(${k})">${it[2]?"✓":""}</div><div class="grow"><b>${it[0]}</b><div class="route">${tag(it[1])} ${SYS[it[1]]}</div></div>${it[2]?'<span class="st done">Done</span>':'<button class="btn sm g" onclick="tick('+k+')">Do it</button>'}</div>`).join("")}
+ </div><div class="grid" style="align-content:start"><div class="card"><h2>Why this matters</h2><p class="mut">Today a moment like ${state.p==="joiner"?"joining":"leaving"} touches 4–5 teams and portals. Here it's one list, with nudges to you${state.p==="joiner"?", your buddy and your manager":" and the teams involved"}.</p></div>
+ <div class="card"><h2>Ask about it</h2><button class="chip" onclick="send('${state.p==="joiner"?"When does my laptop arrive?":"What\\'s left on my clearance?"}')">${state.p==="joiner"?"When does my laptop arrive?":"What's left on my clearance?"}</button></div></div></div>`;
+}
+function tick(k){const j=jr();j.items[k][2]=j.items[k][2]?0:1;if(j.items[k][2])toast("Updated in "+SYS[j.items[k][1]]);render()}
+function vReq(){const r=reqs();return `<h1>My requests</h1><p class="sub">One tracker for everything, whichever team owns it.</p><div class="card"><table><tr><th>ID</th><th>Request</th><th>Team / system</th><th>Status</th><th>Latest</th></tr>${r.map(x=>`<tr><td>${x.id}</td><td><b>${x.t}</b></td><td>${tag(x.f)} <span class="mut">${SYS[x.f]}</span></td><td><span class="st ${x.s}">${stl[x.s]}</span></td><td class="mut">${x.d}</td></tr>`).join("")}</table></div>`}
+function vInbox(){const ib=state.inbox||(state.inbox=[...inboxSeed]);return `<h1>Approvals</h1><p class="sub">One inbox for approvals from four systems. Decisions are written back to each source.</p><div class="card">${ib.length?ib.map((a,k)=>`<div class="row">${tag(a.f)}<div class="grow"><b>${a.t}</b><div class="mut">${a.note} · writes back to ${SYS[a.f]}</div></div><button class="btn sm t" onclick="appr(${k},1)">Approve</button><button class="btn sm g" onclick="appr(${k},0)">Decline</button></div>`).join(""):'<p class="mut">All caught up ✓</p>'}</div>`}
+function appr(k,ok){const a=state.inbox.splice(k,1)[0];toast(`${ok?"Approved":"Declined"} · written back to ${SYS[a.f]}`);render()}
+function vConsole(){
+ const fns=[["HR",46,92,"Payslip, leave, policy"],["IT",58,89,"Password, access, laptop"],["TIME",61,94,"Timesheet fixes"],["LD",38,90,"Course enrolment"],["ADMIN",33,87,"Seat, ID card, cab"],["COMMS",71,95,"Townhall, holidays"]];
+ return `<h1>Owner console</h1><p class="sub">For function owners: see how your services perform in OneDoor. You keep control of your content, workflows and SLAs. <span class="pill">Illustrative pilot numbers</span></p>
+ <div class="grid g4"><div class="card"><div class="mut">North Star · first-touch resolution</div><div class="kpi">47%<small>▲ 9 pts</small></div></div><div class="card"><div class="mut">Answer accuracy (sampled)</div><div class="kpi">91%<small>gate ≥ 85%</small></div></div><div class="card"><div class="mut">Hand-offs to a person</div><div class="kpi">12%</div></div><div class="card"><div class="mut">Privacy incidents</div><div class="kpi">0</div></div></div>
+ <div class="grid g2" style="margin-top:16px"><div class="card"><h2>First-touch resolution by function</h2>${fns.map(f=>`<div class="row">${tag(f[0])}<div class="grow"><div class="bar"><i style="width:${f[1]}%"></i></div><div class="mut">${f[3]}</div></div><b>${f[1]}%</b></div>`).join("")}</div>
+ <div class="card"><h2>Top unanswered intents (next backlog)</h2>${[["Gym / wellness reimbursement","HR",312],["Client-site travel insurance","ADMIN",204],["Software licence transfer","IT",188],["Shift-swap with a colleague","TIME",141]].map(x=>`<div class="row">${tag(x[1])}<div class="grow">${x[0]}</div><span class="mut">${x[2]} asks / month</span></div>`).join("")}<p class="hint" style="margin-top:12px">Phase gate: an intent moves from “answer” to “act” only when accuracy ≥ 85% and the owning function signs off.</p></div></div>`;
+}
+function vContracts(){
+ const rows=[["HR","Leave, payslip, policy Q&A, relocation, parental leave, exit","HR Policy team","Answer: instant · Case: 2 days","Employee ID, grade, location, leave balance","HR helpdesk → HRBP","Act"],
+ ["IT","Password, access, laptop, software, VPN","IT knowledge manager","P3 ticket: 1 day","Employee ID, device ID, access profile","Service desk L1 → L2","Act"],
+ ["TIME","Timesheet, shift, overtime","Workforce ops","Correction: 3 days","Swipe logs, roster","Payroll ops","Act"],
+ ["LD","Course search, enrolment, mandatory training","L&D catalogue owner","Enrolment: instant","Role, skills, completions","L&D desk","Act"],
+ ["ADMIN","Seat, ID card, cab, locker","Facilities lead","Booking: instant · Card: 2 days","Location, shift","Admin desk","Answer → Act (Ph.2)"],
+ ["COMMS","Townhalls, announcements, holidays","Internal comms","Content: same day","Location, team","Comms team","Answer"]];
+ return `<h1>Service contracts</h1><p class="sub">To join OneDoor, each function signs a one-page contract. This is how functions keep control while employees get one front door.</p>
+ <div class="card" style="overflow:auto"><table><tr><th>Function</th><th>Intents published</th><th>Knowledge owner</th><th>SLA</th><th>Data shared (minimum needed)</th><th>Escalation</th><th>Autonomy level</th></tr>${rows.map(r=>`<tr><td>${tag(r[0])}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td><span class="st new">${r[6]}</span></td></tr>`).join("")}</table></div>
+ <p class="mut" style="margin-top:10px">Illustrative contract terms for the prototype.</p>`;
+}
+// ---------- Shell ----------
+function go(t){state.tab=t;render()}
+function render(){
+ const P=PERSONAS[state.p];if(!P.tabs.includes(state.tab))state.tab=P.tabs[0];
+ $("#nav").innerHTML=P.tabs.map(t=>`<button class="${t===state.tab?"on":""}" onclick="go('${t}')">${TABN[t]}</button>`).join("");
+ const v={home:vHome,ask:vAsk,journey:vJourney,requests:vReq,inbox:vInbox,console:vConsole,contracts:vContracts}[state.tab];
+ $("#app").innerHTML=v();const ch=$("#chat");if(ch)ch.scrollTop=1e6;
+}
+$("#persona").innerHTML=Object.entries(PERSONAS).map(([k,v])=>`<option value="${k}">${v.name} — ${v.role.split("·")[0].trim()}</option>`).join("");
+$("#persona").onchange=e=>{state.p=e.target.value;state.tab=PERSONAS[state.p].tabs[0];render()};
+render();
+</script>
+</body>
+</html>
