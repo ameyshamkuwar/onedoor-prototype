@@ -58,6 +58,23 @@ table{width:100%;border-collapse:collapse;font-size:12.5px}th,td{text-align:left
 .hint{background:var(--teal-l);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--navy)}
 .pill{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:20px;padding:2px 8px}
 .legend{display:flex;gap:6px;flex-wrap:wrap}
+.tourbtn{background:var(--teal);color:#fff;border:0;border-radius:8px;padding:8px 12px;font-weight:700;font-size:12.5px}
+.tour{position:fixed;right:20px;bottom:20px;width:360px;max-width:calc(100vw - 40px);background:var(--navy);color:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 12px 32px rgba(10,20,50,.35);z-index:20}
+.tour h3{margin:4px 0 6px;font-size:16px}.tour p{margin:0 0 12px;color:#cfd6e4;line-height:1.45;font-size:13px}
+.tour .k{font-size:11px;color:#7FD4DC;font-weight:700;letter-spacing:.06em}
+.tour .dots{display:flex;gap:4px;margin-bottom:10px}.tour .dots i{width:18px;height:4px;border-radius:3px;background:#33476E}.tour .dots i.on{background:#7FD4DC}
+.tour .row2{display:flex;gap:8px;justify-content:flex-end}.tour button{border:0;border-radius:8px;padding:7px 12px;font-weight:700;font-size:12.5px}
+.tour .nx{background:var(--teal);color:#fff}.tour .bk{background:#22355E;color:#fff}.tour .ex{background:none;color:#9fb0cc;margin-right:auto;padding-left:0}
+.hl{outline:3px solid var(--amber)!important;outline-offset:3px;border-radius:10px;animation:pulse 1.4s ease-in-out 3}
+@keyframes pulse{50%{outline-color:rgba(242,165,65,.25)}}
+.tl{display:flex;align-items:flex-start;margin:10px 0 6px}.tl .stp{flex:1;text-align:center;font-size:11.5px;color:var(--mut);position:relative}
+.tl .stp b{display:block;width:22px;height:22px;border-radius:50%;margin:0 auto 4px;background:var(--line);color:#fff;font-size:11px;line-height:22px}
+.tl .stp.on b{background:var(--teal)}.tl .stp.cur b{background:var(--amber)}.tl .stp.on,.tl .stp.cur{color:var(--ink);font-weight:600}
+.tl .ln{flex:1;height:3px;background:var(--line);margin-top:10px}.tl .ln.on{background:var(--teal)}
+.sla{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--mut)}.sla .bar{flex:1}
+.bl input,.bl select{width:72px;padding:5px 6px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:12.5px}
+.bl tr.in td{background:#E3F6F7}.bl tr.pin td{background:#FEF4E4}.bl td{vertical-align:middle}
+.score{font-weight:800;color:var(--navy)}
 .hidden{display:none}
 .typing{color:var(--mut);font-style:italic;font-size:12.5px}
 a{color:var(--teal)}
@@ -68,12 +85,14 @@ a{color:var(--teal)}
 <header>
   <div class="logo"><div class="door"></div>OneDoor</div>
   <nav id="nav"></nav>
+  <button class="tourbtn" onclick="startTour()">▶ 60-sec tour</button>
   <div class="persona">Viewing as
     <select id="persona"></select>
   </div>
 </header>
 <main id="app"></main>
 <div class="toast" id="toast"></div>
+<div id="tour"></div>
 
 <script>
 // ---------- Data (all simulated) ----------
@@ -84,9 +103,9 @@ const PERSONAS={
  assoc:{name:"Rahul",role:"Associate · Senior Engineer",tabs:["home","ask","requests"]},
  mgr:{name:"Meera",role:"People manager · 9 reports",tabs:["home","ask","inbox","requests"]},
  leaver:{name:"Arjun",role:"Serving notice · last day 12 Dec",tabs:["home","ask","journey","requests"]},
- owner:{name:"Function owner",role:"HR / IT service lead",tabs:["console","contracts"]}
+ owner:{name:"Function owner",role:"HR / IT service lead",tabs:["console","backlog","contracts"]}
 };
-const TABN={home:"My Day",ask:"Ask OneDoor",journey:"My journey",requests:"My requests",inbox:"Approvals",console:"Owner console",contracts:"Service contracts"};
+const TABN={home:"My Day",ask:"Ask OneDoor",journey:"My journey",requests:"My requests",inbox:"Approvals",console:"Owner console",backlog:"RICE backlog",contracts:"Service contracts"};
 let state={p:"joiner",tab:"home",chat:{},reqs:{},journey:{},inbox:null};
 const seedReqs={
  joiner:[{id:"REQ-1041",t:"Laptop & accessories",f:"IT",s:"prog",d:"Shipped to desk 4B-112 · ETA today"},{id:"REQ-1039",t:"Access card",f:"ADMIN",s:"done",d:"Collect from reception, Tower B"}],
@@ -219,7 +238,16 @@ function vJourney(){
  <div class="card"><h2>Ask about it</h2><button class="chip" onclick="send('${state.p==="joiner"?"When does my laptop arrive?":"What\\'s left on my clearance?"}')">${state.p==="joiner"?"When does my laptop arrive?":"What's left on my clearance?"}</button></div></div></div>`;
 }
 function tick(k){const j=jr();j.items[k][2]=j.items[k][2]?0:1;if(j.items[k][2])toast("Updated in "+SYS[j.items[k][1]]);render()}
-function vReq(){const r=reqs();return `<h1>My requests</h1><p class="sub">One tracker for everything, whichever team owns it.</p><div class="card"><table><tr><th>ID</th><th>Request</th><th>Team / system</th><th>Status</th><th>Latest</th></tr>${r.map(x=>`<tr><td>${x.id}</td><td><b>${x.t}</b></td><td>${tag(x.f)} <span class="mut">${SYS[x.f]}</span></td><td><span class="st ${x.s}">${stl[x.s]}</span></td><td class="mut">${x.d}</td></tr>`).join("")}</table></div>`}
+const SLA={HR:"2 working days",IT:"1 working day",TIME:"3 working days",LD:"instant",ADMIN:"2 working days",COMMS:"same day"};
+function stages(x){return["Submitted","Routed to "+FN[x.f],x.s==="wait"?"Manager approval":"Being worked on","Done"]}
+function cur(x){return x.s==="done"?4:x.s==="new"?1:2}
+function slaPct(x){if(x.s==="done")return 100;let h=0;for(const c of x.id)h+=c.charCodeAt(0);return 25+h%55}
+function vReq(){const r=reqs();return `<h1>My requests</h1><p class="sub">Where is my request? One tracker for everything, whichever team owns it, with the SLA the owning team committed to.</p>
+ <div class="grid g2">${r.map(x=>{const st=stages(x),c=cur(x),p=slaPct(x);return `<div class="card req"><div class="row" style="padding:0;border:0">${tag(x.f)}<div class="grow"><b>${x.t}</b><div class="mut">${x.id} · ${SYS[x.f]}</div></div><span class="st ${x.s}">${stl[x.s]}</span></div>
+ <div class="tl">${st.map((t,k)=>`${k?`<div class="ln ${k<c?"on":""}"></div>`:""}<div class="stp ${k<c?"on":k===c?"cur":""}"><b>${k<c?"✓":k+1}</b>${t}</div>`).join("")}</div>
+ <div class="sla"><span>SLA: ${SLA[x.f]}</span><div class="bar"><i style="width:${p}%;background:${x.s==="done"?"var(--green)":p>70?"var(--amber)":"var(--teal)"}"></i></div><span>${x.s==="done"?"Closed within SLA":p>70?"Due soon":"On track"}</span></div>
+ <p class="mut" style="margin:8px 0 0">Latest: ${x.d}</p></div>`}).join("")}</div>
+ <p class="hint" style="margin-top:14px">No more “any update?” messages: status comes live from each team’s own system, and OneDoor nudges the owner before the SLA is breached.</p>`}
 function vInbox(){const ib=state.inbox||(state.inbox=[...inboxSeed]);return `<h1>Approvals</h1><p class="sub">One inbox for approvals from four systems. Decisions are written back to each source.</p><div class="card">${ib.length?ib.map((a,k)=>`<div class="row">${tag(a.f)}<div class="grow"><b>${a.t}</b><div class="mut">${a.note} · writes back to ${SYS[a.f]}</div></div><button class="btn sm t" onclick="appr(${k},1)">Approve</button><button class="btn sm g" onclick="appr(${k},0)">Decline</button></div>`).join(""):'<p class="mut">All caught up ✓</p>'}</div>`}
 function appr(k,ok){const a=state.inbox.splice(k,1)[0];toast(`${ok?"Approved":"Declined"} · written back to ${SYS[a.f]}`);render()}
 function vConsole(){
@@ -240,17 +268,50 @@ function vContracts(){
  <div class="card" style="overflow:auto"><table><tr><th>Function</th><th>Intents published</th><th>Knowledge owner</th><th>SLA</th><th>Data shared (minimum needed)</th><th>Escalation</th><th>Autonomy level</th></tr>${rows.map(r=>`<tr><td>${tag(r[0])}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td><span class="st new">${r[6]}</span></td></tr>`).join("")}</table></div>
  <p class="mut" style="margin-top:10px">Illustrative contract terms for the prototype.</p>`;
 }
+
+// ---------- RICE backlog (owner) ----------
+let CAP=15;
+const BL=[{n:"Universal request tracker",p:"P2",r:12000,i:1,c:90,e:2},{n:"Unified search + cited answers",p:"P1, P3",r:15000,i:1,c:80,e:4},{n:"Ask & Do: top 20 transactions",p:"P1",r:12000,i:2,c:70,e:6},{n:"Proactive nudges",p:"P2",r:9000,i:0.5,c:60,e:2},{n:"Manager approvals inbox",p:"P5",r:1500,i:2,c:80,e:3},{n:"Onboarding journey (Day −7 → 30)",p:"P4",r:750,i:3,c:80,e:3,ov:true},{n:"Exit checklist",p:"P6",r:340,i:2,c:70,e:3},{n:"Autonomous multi-step agent",p:"P4",r:300,i:3,c:30,e:8}];
+const rice=b=>Math.round(b.r*b.i*(b.c/100)/b.e);
+function plan(){const order=[...BL].sort((a,b)=>(b.ov?1:0)-(a.ov?1:0)||rice(b)-rice(a));let used=0;const inn=new Set();for(const b of order){if(used+b.e<=CAP){used+=b.e;inn.add(b)}}return{order,inn,used}}
+function setBL(k,f,v){BL[k][f]=f==="ov"?v:Number(v);render()}
+function vBacklog(){const {order,inn,used}=plan();
+ return `<h1>RICE backlog</h1><p class="sub">Which intents and features do we build next? Edit any input and the list re-ranks live. The plan fills this quarter’s capacity in score order. <span class="pill">Illustrative inputs</span></p>
+ <div class="grid g4" style="margin-bottom:16px"><div class="card" style="grid-column:span 2"><div class="mut">Squad capacity this quarter (person-months)</div><div style="display:flex;align-items:center;gap:12px"><input type="range" min="4" max="30" value="${CAP}" onchange="CAP=Number(this.value);render()" style="flex:1"><span class="kpi">${CAP}</span></div></div>
+ <div class="card"><div class="mut">Planned effort</div><div class="kpi">${used}<small style="color:var(--mut)">/ ${CAP}</small></div></div><div class="card"><div class="mut">Features in plan</div><div class="kpi">${inn.size+1}<small style="color:var(--mut)">incl. hand-off</small></div></div></div>
+ <div class="card bl" style="overflow:auto"><table><tr><th>#</th><th>Feature</th><th>Solves</th><th>Reach / qtr</th><th>Impact</th><th>Confidence %</th><th>Effort (p-m)</th><th>RICE</th><th>Override</th><th>Plan</th></tr>
+ <tr class="pin"><td>–</td><td><b>Human hand-off with context</b></td><td>Trust</td><td colspan="5" class="mut">Not scored: a Kano must-have. Without it nobody trusts the assistant.</td><td>📌</td><td><span class="st done">Always</span></td></tr>
+ ${order.map((b,n)=>{const k=BL.indexOf(b);return `<tr class="${inn.has(b)?(b.ov?"pin":"in"):""}"><td>${n+1}</td><td><b>${b.n}</b></td><td>${b.p}</td><td><input type="number" value="${b.r}" onchange="setBL(${k},'r',this.value)"></td><td><select onchange="setBL(${k},'i',this.value)">${[3,2,1,0.5,0.25].map(v=>`<option ${v==b.i?"selected":""}>${v}</option>`).join("")}</select></td><td><input type="number" min="0" max="100" value="${b.c}" onchange="setBL(${k},'c',this.value)"></td><td><input type="number" min="1" value="${b.e}" onchange="setBL(${k},'e',this.value)"></td><td class="score">${rice(b).toLocaleString("en-IN")}</td><td><input type="checkbox" ${b.ov?"checked":""} onchange="setBL(${k},'ov',this.checked)" style="width:auto"></td><td>${inn.has(b)?`<span class="st ${b.ov?"wait":"new"}">${b.ov?"Override":"In plan"}</span>`:`<span class="mut">Next</span>`}</td></tr>`}).join("")}</table></div>
+ <p class="hint" style="margin-top:12px"><b>How to read it:</b> RICE = Reach × Impact × Confidence ÷ Effort. Ticked rows are strategic overrides (e.g. onboarding: small reach, but it is the pilot cohort), and we say so openly. Filling capacity in order of value reuses the budget-allocator idea from our EXL attrition PoC.</p>`}
+// ---------- Guided tour ----------
+const TOUR=[
+ {p:"joiner",tab:"home",t:"Welcome to OneDoor",b:"One front door to HR, IT, time, learning, admin and comms. Each team keeps its own system. Eight quick stops; use Next.",sel:".ask"},
+ {p:"joiner",tab:"home",t:"Priya, a new joiner (Day 3)",b:"Her onboarding is one checklist pulling tasks from four teams, and every request she has raised is in one list.",sel:".card"},
+ {p:"assoc",tab:"ask",t:"Ask once, in plain language",b:"Rahul asks for leave. OneDoor shows which system the action will land in. Click Confirm to try it.",act:()=>send("Apply 2 days leave and tell my manager"),sel:".action"},
+ {p:"assoc",tab:"ask",t:"Trust: it won't guess",b:"When confidence is low, OneDoor hands off to a person with the question attached instead of making up an answer.",act:()=>send("Can I expense my gym membership?"),sel:".msg.bot:last-of-type"},
+ {p:"assoc",tab:"requests",t:"Where is my request?",b:"Every request shows its stage and the SLA the owning team committed to. No more chasing on chat.",sel:".req"},
+ {p:"mgr",tab:"inbox",t:"Managers: one approvals inbox",b:"Leave, access, timesheets and courses from four systems, approved in one place and written back to each source.",sel:".card"},
+ {p:"owner",tab:"backlog",t:"Function owners prioritise with RICE",b:"Change any input or the capacity slider and the backlog re-ranks live. Overrides are explicit.",sel:".bl"},
+ {p:"owner",tab:"contracts",t:"Functions keep control",b:"Each function joins through a one-page service contract: intents, owner, SLA, minimum data, escalation, autonomy level. That's the tour.",sel:"table"}
+];
+let TI=-1;const DONE=new Set();
+function startTour(){TI=0;tourGo()}
+function tourGo(){const st=TOUR[TI];state.p=st.p;state.tab=st.tab;render();if(st.act&&!DONE.has(TI)){DONE.add(TI);st.act();setTimeout(()=>{hl(st.sel)},800)}else hl(st.sel)}
+function hl(sel){document.querySelectorAll(".hl").forEach(e=>e.classList.remove("hl"));if(!sel)return;const els=document.querySelectorAll("#app "+sel);const e=els[els.length-1]&&sel.includes("last")?els[els.length-1]:els[0];if(e){e.classList.add("hl");e.scrollIntoView({block:"center",behavior:"smooth"})}}
+function drawTour(){const el=$("#tour");if(TI<0){el.innerHTML="";return}const st=TOUR[TI];el.innerHTML=`<div class="tour"><div class="dots">${TOUR.map((_,k)=>`<i class="${k<=TI?"on":""}"></i>`).join("")}</div><div class="k">GUIDED TOUR · ${TI+1} OF ${TOUR.length}</div><h3>${st.t}</h3><p>${st.b}</p><div class="row2"><button class="ex" onclick="TI=-1;drawTour();hl()">Exit tour</button>${TI?`<button class="bk" onclick="TI--;tourGo()">Back</button>`:""}<button class="nx" onclick="${TI<TOUR.length-1?"TI++;tourGo()":"TI=-1;drawTour();hl();toast('Explore freely: switch persona at top-right')"}">${TI<TOUR.length-1?"Next →":"Finish"}</button></div></div>`}
 // ---------- Shell ----------
 function go(t){state.tab=t;render()}
 function render(){
  const P=PERSONAS[state.p];if(!P.tabs.includes(state.tab))state.tab=P.tabs[0];
  $("#nav").innerHTML=P.tabs.map(t=>`<button class="${t===state.tab?"on":""}" onclick="go('${t}')">${TABN[t]}</button>`).join("");
- const v={home:vHome,ask:vAsk,journey:vJourney,requests:vReq,inbox:vInbox,console:vConsole,contracts:vContracts}[state.tab];
+ const v={home:vHome,ask:vAsk,journey:vJourney,requests:vReq,inbox:vInbox,console:vConsole,backlog:vBacklog,contracts:vContracts}[state.tab];
  $("#app").innerHTML=v();const ch=$("#chat");if(ch)ch.scrollTop=1e6;
+ $("#persona").value=state.p;drawTour();
 }
 $("#persona").innerHTML=Object.entries(PERSONAS).map(([k,v])=>`<option value="${k}">${v.name} — ${v.role.split("·")[0].trim()}</option>`).join("");
 $("#persona").onchange=e=>{state.p=e.target.value;state.tab=PERSONAS[state.p].tabs[0];render()};
 render();
+try{if(!sessionStorage.getItem("od_tour")){sessionStorage.setItem("od_tour","1");startTour()}}catch(e){startTour()}
 </script>
 </body>
 </html>
