@@ -310,8 +310,11 @@ function render(){
 }
 $("#persona").innerHTML=Object.entries(PERSONAS).map(([k,v])=>`<option value="${k}">${v.name} — ${v.role.split("·")[0].trim()}</option>`).join("");
 $("#persona").onchange=e=>{state.p=e.target.value;state.tab=PERSONAS[state.p].tabs[0];render()};
-render();
-try{if(!sessionStorage.getItem("od_tour")){sessionStorage.setItem("od_tour","1");startTour()}}catch(e){startTour()}
+function fromHash(){const h=decodeURIComponent((location.hash||"").slice(1));if(!h)return false;if(h==="tour"){render();startTour();return true}
+ const q={};h.split("&").forEach(kv=>{const i=kv.indexOf("=");if(i>0)q[kv.slice(0,i)]=kv.slice(i+1)});
+ if(q.p&&PERSONAS[q.p])state.p=q.p;if(q.t&&TABN[q.t])state.tab=q.t;TI=-1;render();if(q.q)setTimeout(()=>send(q.q),300);return true}
+window.addEventListener("hashchange",fromHash);
+if(!fromHash()){render();try{if(!sessionStorage.getItem("od_tour")){sessionStorage.setItem("od_tour","1");startTour()}}catch(e){startTour()}}
 </script>
 </body>
 </html>
